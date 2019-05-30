@@ -13,8 +13,8 @@ var movies = [
     genre: 'Science Fiction/Action',
     rating: 7.8,
   },
-  { title: 'Deadpool 2', year: 2018, genre: 'action', rating: 7.8 },
-  { title: 'Ant-Man and the Wasp', year: 2018, genre: 'action', rating: 7.2 },
+  { title: 'Deadpool 2', year: 2019, genre: 'action', rating: 7.8 },
+  { title: 'Ant-Man and the Wasp', year: 2016, genre: 'action', rating: 7.2 },
   {
     title: 'Venom',
     year: 2018,
@@ -23,61 +23,102 @@ var movies = [
   },
   {
     title: 'Ralph Breaks the Internet',
-    year: 2018,
+    year: 2017,
     genre: 'Comedy',
     rating: 7.3,
   },
 ];
 
-// filter function using a callback
-var filterArr = function(list, cb) {
-  var outputArr = [];
-  // loop through the array of objects and
-  // push if the rating is 8 or more
-  for (var item of list) {
-    if (cb(item)) {
-      outputArr.push(item);
+// We coded our own version of the JS built-in filter function
+function filter(numbers, callback) {
+  var filteredNumbers = [];
+  for (var i = 0; i < numbers.length; i++) {
+    if (callback(numbers[i])) {
+      filteredNumbers.push(numbers[i]);
     }
   }
+  return filteredNumbers;
+}
 
-  return outputArr;
-};
+// We coded our own version of the JS built-in map function
+var update = function(list, callback) {
+  var updateArr = [];
 
-// Update function equivalent to the built-in map function
-var update = function(list, cb) {
-  var outputArr = [];
-
-  for (var item of list) {
-    outputArr.push(cb(item));
+  for (var i = 0; i < list.length; i++) {
+    updateArr.push(callback(list[i]));
   }
-
-  return outputArr;
+  return updateArr;
 };
 
-var filterComedy = function(movieObj) {
-  return movieObj.genre === 'Comedy';
-};
-
-var highestRating = function(movieObj) {
+// Getting the movies with a rating or more than 8
+filter(movies, function(movieObj) {
   return movieObj.rating > 8;
+});
+
+// Getting an array of strings, title and year
+update(movies, function(movieObj) {
+  return 'Title: ' + movieObj.title + ' Year: ' + movieObj.year;
+});
+
+// Getting an array of movie objects with only title and year
+var updatedMovies = update(movies, function(movieObj) {
+  return { title: movieObj.title, year: movieObj.year };
+});
+
+// Chaining the built-in filter and map functions
+movies
+  .filter(function(movieObj) {
+    return (movieObj.year = 2018);
+  })
+  .map(function(movieObj) {
+    return 'Title: ' + movieObj.title + ' Year: ' + movieObj.year;
+  });
+
+var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+
+// Created an accumulate function equivalent to JS built-in Reduce
+var accumulate = function(list, callback, start) {
+  var accumulator = start || 0;
+
+  for (var i = 0; i < list.length; i++) {
+    accumulator = callback(accumulator, list[i]);
+    console.log('accumulator', accumulator);
+  }
+  return accumulator;
 };
 
-var goodComedies = function(movieObj) {
-  return movieObj.rating > 8 && movieObj.genre === 'action';
-};
+// Getting the sum of numbers
+var totalRatings = accumulate(numbers, function(total, next) {
+  return (total += next);
+});
 
-var compactTitles = function(movieObj) {
-  return movieObj.title + ' ' + movieObj.genre + ' ' + movieObj.year;
-};
+// Get the highest rating movie
+var highestRating = accumulate(
+  movies,
+  function(min, movieObj) {
+    if (movieObj.rating < min) {
+      max = movieObj.rating;
+    }
 
-// Getting the titles as strings
-var titles = update(movies, compactTitles);
+    return min;
+  },
+  movies[0].rating
+);
 
-// Getting the movies with higher ratings
-var goodMovies = filterArr(movies, highestRating);
+console.log(highestRating);
 
-// Filtering movies for good comedies
-var comedies = filterArr(movies, goodComedies);
+// var average = function (numbers) {
+//   return sum(numbers) / numbers.length
+// }
 
-// Chainning the built-in filter and map functions
-var myBestTitles = movies.filter(goodComedies).map(compactTitles);
+// Without the accumulate function we needed to code our own
+
+// var ratingAverage = function(moviesArr) {
+//   var total = 0;
+//   for (var i=0; i < moviesArr.length; i++) {
+//     total += moviesArr[i].rating
+//   }
+//   return Math.round(total / moviesArr.length * 100) / 100;
+// }
+
+// ratingAverage(movies);
